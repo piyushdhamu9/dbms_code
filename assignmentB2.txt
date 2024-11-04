@@ -1,0 +1,256 @@
+// Insert initial documents into the employee collection
+db.employee.insertMany([
+    { "custID": "A123", "Amount": 500, "status": "A" },
+    { "custID": "A123", "Amount": 250, "status": "A" },
+    { "custID": "B212", "Amount": 200, "status": "A" },
+    { "custID": "A123", "Amount": 300, "status": "D" }
+]);
+
+// 1. Display all records
+print("Query 1: Display All Records");
+db.employee.find().pretty();
+
+// 2. Display all records with custID "A123"
+print("Query 2: Display Records with custID 'A123'");
+db.employee.find({ custID: "A123" }).pretty();
+
+// 3. Total amount for individual customer ID having status 'A'
+print("Query 3: Total Amount for custID 'A123' with status 'A'");
+db.employee.aggregate([
+    { $match: { custID: "A123", status: "A" } },
+    { $group: { _id: "$custID", totalAmount: { $sum: "$Amount" } } }
+]);
+
+// 4. Minimum amount for individual customer ID having status 'A'
+print("Query 4: Minimum Amount for custID 'A123' with status 'A'");
+db.employee.aggregate([
+    { $match: { status: "A" } },
+    { $group: { _id: "$custID", minAmount: { $min: "$Amount" } } }
+]);
+
+
+// 5. Maximum amount for individual customer ID having status 'A'
+print("Query 5: Maximum Amount for custID 'A123' with status 'A'");
+db.employee.aggregate([
+    { $match: { custID: "A123", status: "A" } },
+    { $group: { _id: "$custID", maxAmount: { $max: "$Amount" } } }
+]);
+
+// 6. Average amount for individual customer ID having status 'A'
+print("Query 6: Average Amount for custID 'A123' with status 'A'");
+db.employee.aggregate([
+    { $match: { custID: "A123", status: "A" } },
+    { $group: { _id: "$custID", avgAmount: { $avg: "$Amount" } } }
+]);
+
+// 7. Amount of first record for individual customer ID having status 'A'
+print("Query 7: First Record Amount for custID 'A123' with status 'A'");
+db.employee.aggregate([
+    { $match: { status: "A" } },
+    { $group: { 
+        _id: "$custID", 
+        firstRecordAmount: { $first: "$Amount" } 
+    }}
+]);
+
+// 8. Amount of last record for individual customer ID having status 'A'
+print("Query 8: Last Record Amount for custID 'A123' with status 'A'");
+db.employee.aggregate([
+    { $match: { custID: "A123", status: "A" } },
+    { $sort: { _id: -1 } },
+    { $limit: 1 },
+    { $project: { _id: 0, lastAmount: "$Amount" } }
+]);
+
+// 9. Create array of amount for individual customer ID having status 'A'
+print("Query 9: Array of Amounts for custID 'A123' with status 'A'");
+db.employee.aggregate([
+    { $match: { custID: "A123", status: "A" } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } }
+]);
+
+// 10. Total amount for individual customer ID after sorting records
+print("Query 10: Sorted Total Amount for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $group: { _id: "$custID", totalAmount: { $sum: "$Amount" } } }
+]);
+
+// 11. Average amount for individual customer ID after sorting records
+print("Query 11: Sorted Average Amount for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $group: { _id: "$custID", avgAmount: { $avg: "$Amount" } } }
+]);
+
+// 12. Minimum amount for individual customer ID after sorting records
+print("Query 12: Sorted Minimum Amount for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $group: { _id: "$custID", minAmount: { $min: "$Amount" } } }
+]);
+
+// 13. Maximum amount for individual customer ID after sorting records
+print("Query 13: Sorted Maximum Amount for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $group: { _id: "$custID", maxAmount: { $max: "$Amount" } } }
+]);
+
+// 14. Amount of first record for individual customer ID after sorting
+print("Query 14: Sorted First Record Amount for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $limit: 1 },
+    { $project: { _id: 0, firstAmount: "$Amount" } }
+]);
+
+// 15. Amount of last record for individual customer ID after sorting
+print("Query 15: Sorted Last Record Amount for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: -1 } },
+    { $limit: 1 },
+    { $project: { _id: 0, lastAmount: "$Amount" } }
+]);
+
+// 16. Create array of amount for individual customer ID after sorting
+print("Query 16: Sorted Array of Amounts for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } }
+]);
+
+// 17. Total amount ignoring first record for individual customer ID
+print("Query 17: Total Amount for custID 'A123' Ignoring First Record");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $skip: 1 },
+    { $group: { _id: "$custID", totalAmount: { $sum: "$Amount" } } }
+]);
+
+// 18. Average amount ignoring first record for individual customer ID
+print("Query 18: Average Amount for custID 'A123' Ignoring First Record");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $skip: 1 },
+    { $group: { _id: "$custID", avgAmount: { $avg: "$Amount" } } }
+]);
+
+// 19. Minimum amount ignoring first record for individual customer ID
+print("Query 19: Minimum Amount for custID 'A123' Ignoring First Record");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $skip: 1 },
+    { $group: { _id: "$custID", minAmount: { $min: "$Amount" } } }
+]);
+
+// 20. Maximum amount ignoring first record for individual customer ID
+print("Query 20: Maximum Amount for custID 'A123' Ignoring First Record");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $skip: 1 },
+    { $group: { _id: "$custID", maxAmount: { $max: "$Amount" } } }
+]);
+
+// 21. Amount of first record ignoring first record for individual customer ID
+print("Query 21: First Amount Ignoring First Record for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $skip: 1 },
+    { $limit: 1 },
+    { $project: { _id: 0, firstAmountAfterSkip: "$Amount" } }
+]);
+
+// 22. Amount of last record ignoring first record for individual customer ID
+print("Query 22: Last Amount Ignoring First Record for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: -1 } },
+    { $skip: 1 },
+    { $limit: 1 },
+    { $project: { _id: 0, lastAmountAfterSkip: "$Amount" } }
+]);
+
+// 23. Create array of amount ignoring first record for individual customer ID
+print("Query 23: Array of Amounts Ignoring First Record for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $skip: 1 },
+    { $group: { _id: "$custID", amountsAfterSkip: { $push: "$Amount" } } }
+]);
+
+// 24. Total amount after limiting to 2 records for individual customer ID
+print("Query 24: Total Amount with Limit of 2 Records for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $limit: 2 },
+    { $group: { _id: "$custID", totalAmount: { $sum: "$Amount" } } }
+]);
+
+// 25. Average amount after limiting to 2 records for individual customer ID
+print("Query 25: Average Amount with Limit of 2 Records for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $limit: 2 },
+    { $group: { _id: "$custID", avgAmount: { $avg: "$Amount" } } }
+]);
+
+// 26. Minimum amount after limiting to 2 records for individual customer ID
+print("Query 26: Minimum Amount with Limit of 2 Records for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $limit: 2 },
+    { $group: { _id: "$custID", minAmount: { $min: "$Amount" } } }
+]);
+
+// 27. Maximum amount after limiting to 2 records for individual customer ID
+print("Query 27: Maximum Amount with Limit of 2 Records for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $limit: 2 },
+    { $group: { _id: "$custID", maxAmount: { $max: "$Amount" } } }
+]);
+
+// 28. Amount of first record after limiting to 2 records for individual customer ID
+print("Query 28: First Record Amount with Limit of 2 for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $limit: 2 },
+    { $project: { _id: 0, firstAmountLimited: "$Amount" } }
+]);
+
+// 29. Amount of last record after limiting to 2 records for individual customer ID
+print("Query 29: Last Record Amount with Limit of 2 for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: -1 } },
+    { $limit: 2 },
+    { $project: { _id: 0, lastAmountLimited: "$Amount" } }
+]);
+
+// 30. Create array of amount after limiting to 2 records for individual customer ID
+print("Query 30: Array of Amounts with Limit of 2 for custID 'A123'");
+db.employee.aggregate([
+    { $match: { custID: "A123" } },
+    { $sort: { Amount: 1 } },
+    { $limit: 2 },
+    { $group: { _id: "$custID", amountsLimited: { $push: "$Amount" } } }
+]);

@@ -1,0 +1,41 @@
+// MongoDB Map-Reduce Operations for 'bankMR' collection
+
+// 1. Create Collection and Insert Documents
+ass3> db.createCollection('bank')
+{ ok: 1 }
+ass3> db.bank.insertMany([
+...     { custid: "c001", custname: "amit", bank: "SBI", balance: 3000, localocation: "Pune" },
+...     { custid: "c002", custname: "amit", bank: "AXIS", balance: 4000, loclocation: "Pune" },
+...     { custid: "c002", custname: "amit", bank: "AXIS", balance: 5000, loclocation: "Mumbai" },
+...     { custid: "c003", custname: "amit", bank: "AXIS", balance: 5000, loclocation: "Nagpur" },
+...     { custid: "c004", custname: "amay", bank: "AXIS", balance: 6000, loclocation: "Nashik" },
+...     { custid: "c005", custname: "amar", bank: "HDFC", balance: 7000, loclocation: "Pune" },
+...     { custid: "c006", custname: "vijay", bank: "HDFC", balance: 8000, lolocation: "Mumbai" }
+...   ]);
+  
+  // 2. Map-Reduce to Display Bank-wise Balance
+  var mapFunction = function() {
+    emit(this.bank, this.balance);
+  };
+  
+  var reduceFunction = function(key, values) {
+    return Array.sum(values);
+  };
+  
+  db.bank.mapReduce(
+    mapFunction,
+    reduceFunction,
+    { out: "bankMR" }
+  );
+  
+
+  
+  // 4. Display Balance of HDFC Bank Only
+  db.bankMR.find({ _Id: "HDFC" }, { balance: 1, _id: 0 });
+  
+  // 5. Display Balance of SBI Bank Only
+  db.bankMR.find({ _Id: "SBI" }, { balance: 1, _id: 0 });
+  
+  // 6. Display Balance of AXIS Bank Only
+  db.bankMR.find({ _Id: "AXIS" }, { balance: 1, _id: 0 });
+  

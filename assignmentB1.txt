@@ -1,0 +1,71 @@
+// Connect to MongoDB and use the "studentDB" database
+use studentDB;
+
+// Assignment Part 1: CRUD Operations on "student" Collection
+db.student.drop(); // Ensure a clean start by dropping the collection if it exists
+
+// 1. Create the "student" collection and insert documents
+db.student.insertMany([
+    { roll_no: 1, name: "amit", addr: "Loni" },
+    { roll_no: 2, name: "shashir", addr: { At: "Loni", Tal: "Rahata", Dist: "Ahemadnagar" } },
+    { roll_no: 11, name: "sachin", percent_marks: 60.23, addr: "Pune" },
+    { name: "Rahul", Address: "Kolhar" }
+]);
+
+// 2. Insert new documents into the "student" collection
+db.student.insertOne({ roll_no: 12, name: "Vishal", addr: "Mumbai" });
+
+// Queries:
+// 3. Retrieve all students' details
+db.student.find().pretty();
+
+// 4. Display only the "name" field from "student" collection
+db.student.find({}, { name: 1, _id: 0 }).pretty();
+
+// 5. Display first 5 student details
+db.student.find().limit(5).pretty();
+
+// 6. Fetch the remaining documents after first 5 documents (using skip)
+db.student.find().skip(5).pretty();
+
+// 7. Find the details of students whose roll_no is between 5 and 10
+db.student.find({ roll_no: { $gt: 5, $lt: 10 } }).pretty();
+
+// 8. Display student details whose address is "Loni" or "Pune"
+db.student.find({ $or: [{ addr: "Loni" }, { addr: "Pune" }] }).pretty();
+
+// 9. Sort the documents of "student" collection in ascending order of "roll_no"
+db.student.find().sort({ roll_no: 1 }).pretty();
+
+// 10. Remove all documents having roll_no no less than 8 and greater than 3
+db.student.deleteMany({ roll_no: { $gte: 8, $lte: 3 } });
+
+// 11. Remove all documents whose address is "Loni"
+db.student.deleteMany({ addr: "Loni" });
+
+// 12. Add new data to a document where _id=10 (if not present, insert new document)
+db.student.updateOne(
+    { _id: 10 },
+    { $set: { name: "Ram", roll_no: 60, addr: "Pune" } },
+    { upsert: true }
+);
+
+// 13. Update the address of roll_no 1 to include full address details
+db.student.updateOne(
+    { roll_no: 1 },
+    {
+        $set: {
+            addr: {
+                At: "Sangamner",
+                Tal: "Sangamner",
+                Dist: "Ahemadnagar"
+            }
+        }
+    }
+);
+
+// 14. Create an index on roll_no field
+db.student.createIndex({ roll_no: 1 });
+
+// 15. Remove the collection "student"
+db.student.drop();
